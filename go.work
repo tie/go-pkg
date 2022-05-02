@@ -15,5 +15,6 @@ use (
 	process
 	syncx
 	task
+	third_party/github.com/lucas-clemente/quic-go
 	zaplog
 )

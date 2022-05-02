@@ -25,6 +25,7 @@
         "process",
         "syncx",
         "task",
+        "third_party/github.com/lucas-clemente/quic-go",
         "zaplog"
       ],
       "url": "https://github.com/pact-im/go-pkg"

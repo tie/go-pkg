@@ -31,3 +31,6 @@ linters:
 
 issues:
   exclude-use-default: false
+  exclude-rules:
+    - path: ^third_party/
+      text: .
