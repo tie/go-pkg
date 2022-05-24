@@ -34,10 +34,7 @@ jobs:
       - name: Install vangen
         run: go install 4d63.com/vangen@v1.2.0
       - name: Install golds
-        run: go install go101.org/golds@v0.4.8
-      # See https://github.com/go101/golds/issues/28
-      - name: Warm up Go modules cache
-        run: go work sync
+        run: go install go101.org/golds@v0.4.9
       - name: Build pages
         run: |
           vangen -out build

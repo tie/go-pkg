@@ -16,6 +16,7 @@
         "flaky",
         "httpclient",
         "httpdebug",
+        "httpserver",
         "jsonlazy",
         "maininfo",
         "names",
