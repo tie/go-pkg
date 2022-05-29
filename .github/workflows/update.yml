@@ -1,0 +1,42 @@
+name: Deps
+on:
+  workflow_dispatch:
+  schedule:
+    # At 06:00 UTC every day.
+    - cron: '0 6 * * *'
+
+jobs:
+  # Due to the https://github.com/dependabot/dependabot-core/issues/3017 we have
+  # to manually update dependencies that use pseudo-versions, e.g. modules like
+  # golang.org/x/crypto.
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3.0.2
+      - name: Set up Go
+        uses: actions/setup-go@v3.2.0
+        with:
+          go-version-file: .go-version
+          cache: true
+          cache-dependency-path: '**/go.sum'
+      - name: Update dependencies
+        run: |
+          eval "$(go list -m -f '(cd {{printf "%q" .Dir}} && go get -u ./...)')"
+          rm -f go.work.sum
+          eval "$(go list -m -f '(cd {{printf "%q" .Dir}} && go mod tidy)')"
+          go work sync
+      - name: Create PR
+        uses: peter-evans/create-pull-request@v4.0.3
+        with:
+          author: GitHub <actions@github.com>
+          committer: GitHub <actions@github.com>
+          commit-message: 'chore(deps): bump dependencies with pseudo-versions'
+          branch: bump-deps
+          delete-branch: true
+          title: 'chore(deps): bump dependencies with pseudo-versions'
+          body: |
+            Bumps dependencies that use pseudo-versions to the latest versions.
+          labels: |
+            dependencies
+            go
