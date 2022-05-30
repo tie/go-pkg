@@ -8,9 +8,18 @@ on:
     - cron: '0 6 * * 1'
   workflow_dispatch:
 
+# See https://github.com/actions/deploy-pages/pull/35
+permissions:
+   contents: read
+   pages: write
+   id-token: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment:
+       name: github-pages
+       url: ${{ steps.deploy-pages.outputs.page_url }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3.0.2
@@ -26,18 +35,14 @@ jobs:
         run: go install go101.org/golds@v0.4.9
       - name: Build pages
         run: |
-          vangen -out build
-          golds -dir=build/doc -gen -silent -footer=simple -wdpkgs-listing=solo all
-          touch build/.nojekyll
-          echo go.pact.im >build/CNAME
-      - name: Push branch
-        working-directory: build
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git init -q -b gh-pages
-          git config user.name actions-user
-          git config user.email actions@github.com
-          git add -A
-          git commit -q -m "${GITHUB_SHA}"
-          git push -f "https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@${GITHUB_SERVER_URL#https://}/${GITHUB_REPOSITORY}.git"
+          vangen -out=_site
+          golds -dir=_site/doc -gen -silent -footer=simple -wdpkgs-listing=solo all
+          touch _site/.nojekyll
+          echo go.pact.im >_site/CNAME
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v0.1.0
+      - name: Deploy pages
+        id: deploy-pages
+        uses: actions/deploy-pages@v1.0.4
+        with:
+          emit_telemetry: false
