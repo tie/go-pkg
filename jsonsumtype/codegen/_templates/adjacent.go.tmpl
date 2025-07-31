@@ -1,0 +1,95 @@
+{{- if eq .Operation.String "decode" }}
+// {{ .Name }} is a [json.UnmarshalFromFunc] decoder function that decodes
+// {{ .SumType }} sum type from an adjacently tagged object.
+{{- with .Variants }}
+//
+// The following tags are supported:
+//
+{{- range . }}
+//   - {{ quote .Tag }} ({{ .Type }} type)
+{{- end }}
+{{- end }}
+func {{ .Name }}{{ with .TypeParams }}[{{ . }}]{{ end }}(dec *jsontext.Decoder, out *{{ .SumType }}) error {
+	switch k := dec.PeekKind(); k {
+	case '{': // OK
+	case 'n': // null
+		*out = nil
+		_, err := dec.ReadToken()
+		return err
+	default:
+		return invalidKindError(k)
+	}
+
+	var container struct {
+		Tag     string         {{ quoteSingle .TagField | quote | print "json:" | backquote }}
+		Content jsontext.Value {{ quoteSingle .ContentField | quote | print "json:" | backquote }}
+	}
+	if err := json.UnmarshalDecode(dec, &container); err != nil {
+		return err
+	}
+
+	in := []byte(container.Content)
+	if len(in) == 0 {
+		in = jsontext.Value("null")
+	}
+
+	switch tag := container.Tag; tag {
+{{- range .Variants }}
+	case {{ quote .Tag }}:
+		v, _ := (*out).({{ .Type }})
+		if err := json.Unmarshal(in, &v, dec.Options()); err != nil {
+			return err
+		}
+		*out = v
+{{- end }}
+	default:
+		return invalidTagError(tag)
+	}
+
+	return nil
+}
+{{- else if eq .Operation.String "encode" }}
+// {{ .Name }} is a [json.MarshalToFunc] encoder function that encodes
+// {{ .SumType }} sum type as an adjacently tagged object.
+{{- with .Variants }}
+//
+// The following types are supported:
+//
+{{- range . }}
+//   - {{ .Type }} ({{ quote .Tag }} tag)
+{{- end }}
+{{- end }}
+func {{ .Name }}{{ with .TypeParams }}[{{ . }}]{{ end }}(enc *jsontext.Encoder, in *{{ .SumType }}) error {
+	if *in == nil {
+		return enc.WriteToken(jsontext.Null)
+	}
+
+	if err := enc.WriteToken(jsontext.BeginObject); err != nil {
+		return err
+	}
+
+	switch v := (*in).(type) {
+{{- range .Variants }}
+	case {{ .Type }}:
+		if err := enc.WriteToken(jsontext.String({{ quote $.TagField }})); err != nil {
+			return err
+		}
+		if err := enc.WriteToken(jsontext.String({{ quote .Tag }})); err != nil {
+			return err
+		}
+		if err := enc.WriteToken(jsontext.String({{ quote $.ContentField }})); err != nil {
+			return err
+		}
+		if err := json.MarshalEncode(enc, v); err != nil {
+			return err
+		}
+{{- end }}
+	default:
+		return &unknownTypeError{
+			Type: reflect.TypeOf(v),
+		}
+	}
+
+	return enc.WriteToken(jsontext.EndObject)
+}
+{{- end }}

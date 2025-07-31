@@ -1,0 +1,39 @@
+var (
+	// errMultipleObjectTags is returned if more than one tag is encountered
+	// when decoding an object.
+	errMultipleObjectTags = errors.New("multiple object tags")
+
+	// errInvalidTuple is returned if an unexpected token is encountered
+	// when decoding an array that must be a 2-tuple.
+	errInvalidTuple = errors.New("invalid tuple")
+)
+
+// unknownTypeError is returned if unknown type is encountered when encoding a
+// sum type.
+type unknownTypeError struct {
+	// Type is the type of the value that is being encoded.
+	Type reflect.Type
+}
+
+// Error implements the error interface.
+func (e *unknownTypeError) Error() string {
+	return "unknown type " + e.Type.String()
+}
+
+// invalidTagError is returned if invalid tag is encountered when
+// decoding an object.
+type invalidTagError string
+
+// Error implements the error interface.
+func (e invalidTagError) Error() string {
+	return "invalid tag " + strconv.Quote(string(e))
+}
+
+// invalidKindError is returned if invalid value kind is encountered when
+// decoding a value.
+type invalidKindError jsontext.Kind
+
+// Error implements the error interface.
+func (e invalidKindError) Error() string {
+	return "invalid kind " + strconv.Quote(jsontext.Kind(e).String())
+}

@@ -1,0 +1,16 @@
+{{ template "header.go.tmpl" .Header }}
+{{ template "errors.go.tmpl" }}
+
+{{ range .Functions }}
+{{ if eq .Tagging.String "external" }}
+{{ template "external.go.tmpl" . }}
+{{ else if eq .Tagging.String "tuple" }}
+{{ template "tuple.go.tmpl" . }}
+{{ else if eq .Tagging.String "internal" }}
+{{ template "internal.go.tmpl" . }}
+{{ else if eq .Tagging.String "adjacent" }}
+{{ template "adjacent.go.tmpl" . }}
+{{ else if eq .Tagging.String "untagged" }}
+{{ template "untagged.go.tmpl" . }}
+{{ end }}
+{{ end }}

@@ -12,6 +12,8 @@ use (
 	httpclient
 	httpdebug
 	jsonlazy
+	jsonsumtype
+	jsonsumtype/examples
 	maininfo
 	names
 	old/pgtxtar

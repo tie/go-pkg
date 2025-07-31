@@ -1,0 +1,60 @@
+{{- if eq .Operation.String "decode" }}
+// {{ .Name }} is a [json.UnmarshalFromFunc] decoder function that decodes
+// {{ .SumType }} sum type from an untagged value.
+{{- with .Variants }}
+//
+// The following types are supported:
+//
+{{- range . }}
+//   - {{ .Type }}
+{{- end }}
+{{- end }}
+func {{ .Name }}{{ with .TypeParams }}[{{ . }}]{{ end }}(dec *jsontext.Decoder, out *{{ .SumType }}) error {
+	value, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	in := []byte(value)
+
+{{- range .Variants }}
+	{
+		v, _ := (*out).({{ .Type }})
+		err = json.Unmarshal(in, &v, dec.Options())
+		if err == nil {
+			*out = v
+			goto exit
+		}
+	}
+{{- end }}
+exit:
+	return err
+}
+{{- else if eq .Operation.String "encode" }}
+// {{ .Name }} is a [json.MarshalToFunc] encoder function that encodes
+// {{ .SumType }} sum type as an untagged value.
+{{- with .Variants }}
+//
+// The following types are supported:
+//
+{{- range . }}
+//   - {{ .Type }}
+{{- end }}
+{{- end }}
+func {{ .Name }}{{ with .TypeParams }}[{{ . }}]{{ end }}(enc *jsontext.Encoder, in *{{ .SumType }}) error {
+	if *in == nil {
+		return enc.WriteToken(jsontext.Null)
+	}
+
+	switch v := (*in).(type) {
+{{- range .Variants }}
+	case {{ .Type }}:
+		return json.MarshalEncode(enc, v)
+{{- end }}
+	default:
+		return &unknownTypeError{
+			Type: reflect.TypeOf(v),
+		}
+	}
+}
+{{- end }}

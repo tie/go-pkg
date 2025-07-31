@@ -1,0 +1,96 @@
+{{- if eq .Operation.String "decode" }}
+// {{ .Name }} is a [json.UnmarshalFromFunc] decoder function that decodes
+// {{ .SumType }} sum type from an internally tagged object.
+{{- with .Variants }}
+//
+// The following tags are supported:
+//
+{{- range . }}
+//   - {{ quote .Tag }} ({{ .Type }} type)
+{{- end }}
+{{- end }}
+func {{ .Name }}{{ with .TypeParams }}[{{ . }}]{{ end }}(dec *jsontext.Decoder, out *{{ .SumType }}) error {
+	switch k := dec.PeekKind(); k {
+	case '{': // OK
+	case 'n': // null
+		*out = nil
+		_, err := dec.ReadToken()
+		return err
+	default:
+		return invalidKindError(k)
+	}
+
+	var container struct {
+		Tag     string         {{ quoteSingle .TagField | quote | print "json:" | backquote }}
+		Content jsontext.Value `json:",inline"`
+	}
+	if err := json.UnmarshalDecode(dec, &container); err != nil {
+		return err
+	}
+
+	in := []byte(container.Content)
+	if len(in) == 0 {
+		in = jsontext.Value("{}")
+	}
+
+	switch tag := container.Tag; tag {
+{{- range .Variants }}
+	case {{ quote .Tag }}:
+		v, _ := (*out).({{ .Type }})
+		if err := json.Unmarshal(in, &v, dec.Options()); err != nil {
+			return err
+		}
+		*out = v
+{{- end }}
+	default:
+		return invalidTagError(tag)
+	}
+
+	return nil
+}
+{{- else if eq .Operation.String "encode" }}
+// {{ .Name }} is a [json.MarshalToFunc] encoder function that encodes
+// {{ .SumType }} sum type as an internally tagged object.
+{{- with .Variants }}
+//
+// The following types are supported:
+//
+{{- range . }}
+//   - {{ .Type }} ({{ quote .Tag }} tag)
+{{- end }}
+{{- end }}
+func {{ .Name }}{{ with .TypeParams }}[{{ . }}]{{ end }}(enc *jsontext.Encoder, in *{{ .SumType }}) error {
+	if *in == nil {
+		return enc.WriteToken(jsontext.Null)
+	}
+
+	// NB we encode twice to allow custom marshaler implementations,
+	// including typed marshal functions specified in encoder options.
+	// After encoding the value, we inline it into a container with tag.
+	// JSON package will return an error if the encoding contains duplicate
+	// tag field or is not an object.
+
+	var container struct {
+		Tag     string         {{ quoteSingle .TagField | quote | print "json:" | backquote }}
+		Content jsontext.Value `json:",inline"`
+	}
+
+	switch v := (*in).(type) {
+{{- range .Variants }}
+	case {{ .Type }}:
+		content, err := json.Marshal(v, enc.Options())
+		if err != nil {
+			return err
+		}
+		container.Tag = {{ quote .Tag }}
+		container.Content = jsontext.Value(content)
+{{- end }}
+	default:
+		return &unknownTypeError{
+			Type: reflect.TypeOf(v),
+		}
+	}
+
+	return json.MarshalEncode(enc, &container)
+}
+{{- end }}

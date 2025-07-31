@@ -1,0 +1,169 @@
+{
+  "Header": {
+    "JSONPackage": "experiment"
+  },
+  "Functions": [
+    {
+      "Name": "unmarshalShapeExternallyTagged",
+      "SumType": "Shape",
+      "Operation": "decode",
+      "Tagging": "external",
+      "Variants": [
+        {
+          "Tag": "circle",
+          "Type": "Circle"
+        },
+        {
+          "Tag": "square",
+          "Type": "Square"
+        }
+      ]
+    },
+    {
+      "Name": "marshalShapeExternallyTagged",
+      "SumType": "Shape",
+      "Operation": "encode",
+      "Tagging": "external",
+      "Variants": [
+        {
+          "Tag": "circle",
+          "Type": "Circle"
+        },
+        {
+          "Tag": "square",
+          "Type": "Square"
+        }
+      ]
+    },
+    {
+      "Name": "unmarshalShapeTaggedTuple",
+      "SumType": "Shape",
+      "Operation": "decode",
+      "Tagging": "tuple",
+      "Variants": [
+        {
+          "Tag": "circle",
+          "Type": "Circle"
+        },
+        {
+          "Tag": "square",
+          "Type": "Square"
+        }
+      ]
+    },
+    {
+      "Name": "marshalShapeTaggedTuple",
+      "SumType": "Shape",
+      "Operation": "encode",
+      "Tagging": "tuple",
+      "Variants": [
+        {
+          "Tag": "circle",
+          "Type": "Circle"
+        },
+        {
+          "Tag": "square",
+          "Type": "Square"
+        }
+      ]
+    },
+    {
+      "Name": "unmarshalShapeInternallyTagged",
+      "SumType": "Shape",
+      "Operation": "decode",
+      "Tagging": "internal",
+      "Variants": [
+        {
+          "Tag": "circle",
+          "Type": "Circle"
+        },
+        {
+          "Tag": "square",
+          "Type": "Square"
+        }
+      ],
+      "TagField": "tag"
+    },
+    {
+      "Name": "marshalShapeInternallyTagged",
+      "SumType": "Shape",
+      "Operation": "encode",
+      "Tagging": "internal",
+      "Variants": [
+        {
+          "Tag": "circle",
+          "Type": "Circle"
+        },
+        {
+          "Tag": "square",
+          "Type": "Square"
+        }
+      ],
+      "TagField": "tag"
+    },
+    {
+      "Name": "unmarshalShapeAdjacentlyTagged",
+      "SumType": "Shape",
+      "Operation": "decode",
+      "Tagging": "adjacent",
+      "Variants": [
+        {
+          "Tag": "circle",
+          "Type": "Circle"
+        },
+        {
+          "Tag": "square",
+          "Type": "Square"
+        }
+      ],
+      "TagField": "tag",
+      "ContentField": "content"
+    },
+    {
+      "Name": "marshalShapeAdjacentlyTagged",
+      "SumType": "Shape",
+      "Operation": "encode",
+      "Tagging": "adjacent",
+      "Variants": [
+        {
+          "Tag": "circle",
+          "Type": "Circle"
+        },
+        {
+          "Tag": "square",
+          "Type": "Square"
+        }
+      ],
+      "TagField": "tag",
+      "ContentField": "content"
+    },
+    {
+      "Name": "unmarshalShapeUntagged",
+      "SumType": "Shape",
+      "Operation": "decode",
+      "Tagging": "untagged",
+      "Variants": [
+        {
+          "Type": "Circle"
+        },
+        {
+          "Type": "Square"
+        }
+      ]
+    },
+    {
+      "Name": "marshalShapeUntagged",
+      "SumType": "Shape",
+      "Operation": "encode",
+      "Tagging": "untagged",
+      "Variants": [
+        {
+          "Type": "Circle"
+        },
+        {
+          "Type": "Square"
+        }
+      ]
+    }
+  ]
+}

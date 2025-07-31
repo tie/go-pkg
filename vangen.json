@@ -20,6 +20,7 @@
         "httpclient",
         "httpdebug",
         "jsonlazy",
+        "jsonsumtype",
         "maininfo",
         "names",
         "names/dockernames",
