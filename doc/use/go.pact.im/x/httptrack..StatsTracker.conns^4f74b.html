@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>References: go.pact.im/x/httptrack.StatsTracker.conns</title>
+<link href="../../../css/auto-v0.7.6.css" rel="stylesheet">
+<script src="../../../jvs/golds-v0.7.6.js"></script>
+<body onload="onPageLoad()"><div>
+
+<pre><code><span style="font-size:x-large;"><b><a href="../../../pkg/go.pact.im/x/httptrack.html">go.pact.im/x/httptrack</a>.<a href="../../../src/go.pact.im/x/httptrack/stats.go.html#line-121">StatsTracker</a>.<a href="../../../src/go.pact.im/x/httptrack/stats.go.html#line-123">conns</a></b></span><span style="font-size: large;"><i> (field)</i></span>
+
+<span class="title">6 uses</span>
+
+	go.pact.im/x/httptrack (current package)
+		<a href="../../../src/go.pact.im/x/httptrack/stats.go.html#line-123">stats.go#L123</a>: 	<b>conns</b> map[net.Conn]http.ConnState
+		<a href="../../../src/go.pact.im/x/httptrack/stats.go.html#line-139" class="path-duplicate">stats.go</a><a href="../../../src/go.pact.im/x/httptrack/stats.go.html#line-139">#L139</a>: 	if oldState, ok := s.<b>conns</b>[conn]; ok {
+		<a href="../../../src/go.pact.im/x/httptrack/stats.go.html#line-145" class="path-duplicate">stats.go</a><a href="../../../src/go.pact.im/x/httptrack/stats.go.html#line-145">#L145</a>: 		delete(s.<b>conns</b>, conn)
+		<a href="../../../src/go.pact.im/x/httptrack/stats.go.html#line-147" class="path-duplicate">stats.go</a><a href="../../../src/go.pact.im/x/httptrack/stats.go.html#line-147">#L147</a>: 		if s.<b>conns</b> == nil {
+		<a href="../../../src/go.pact.im/x/httptrack/stats.go.html#line-148" class="path-duplicate">stats.go</a><a href="../../../src/go.pact.im/x/httptrack/stats.go.html#line-148">#L148</a>: 			s.<b>conns</b> = make(map[net.Conn]http.ConnState)
+		<a href="../../../src/go.pact.im/x/httptrack/stats.go.html#line-150" class="path-duplicate">stats.go</a><a href="../../../src/go.pact.im/x/httptrack/stats.go.html#line-150">#L150</a>: 		s.<b>conns</b>[conn] = state
+</code></pre><pre id="footer">
+The pages are generated with <a href="https://go101.org/apps-and-libs/golds.html"><b>Golds</b></a> <i>v0.7.6</i>. (GOOS=linux GOARCH=amd64)</pre>
